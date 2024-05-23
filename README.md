@@ -27,10 +27,9 @@ Instructions on how to install and set up your project:
     pip install -r requirements.txt
     ```
 
-4. Set the environment variables:
+4. Set the environment variable:
     ```
     export GITHUB_API_KEY=your_api_key
-    export DIRECTORY=/path/to/directory
     ```
 
 5. Run the project:
