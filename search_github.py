@@ -13,7 +13,7 @@ api_key = os.getenv('GITHUB_API_KEY')
 headers = {'Authorization': f'token {api_key}'}
 
 # Directory
-directory = os.getenv('DIRECTORY_PATH')
+directory = os.getcwd()
 
 # Set this for timeframe we want to search over
 last_x_days = 30
@@ -69,66 +69,67 @@ def make_request(url, parameters, headers):
         except Exception as e:
             return e
 
-# Load the list of repositories from the CSV file
-ec_tracked_repos = load_ec_tracked_repos(curr_date)
+def search_repos():
+    # Load the list of repositories from the CSV file
+    ec_tracked_repos = load_ec_tracked_repos(curr_date)
 
-# Load the list of already checked repositories from another CSV file
-checked_repos = load_reviewed_repos_to_exclude()
+    # Load the list of already checked repositories from another CSV file
+    checked_repos = load_reviewed_repos_to_exclude()
 
-# Initialize an empty list for new repositories to review
-new_repos = []
+    # Initialize an empty list for new repositories to review
+    new_repos = []
 
-# Search queries as list of dictionaries
-queries = [
-    {"type":"repo","query":"\"near-api-js\""},
-    {"type":"repo","query":"near-wallet -owner:near"},
-    {"type":"repo","query":"near lake -owner:near"},
-    {"type":"repo","query":"near indexer -owner:near"},
-    {"type":"repo","query":"near rpc -owner:near"},
-    {"type":"repo","query":"content:README.md near protocol -owner:near"},
-    {"type":"repo","query":"\"near-sdk\" stars:1..150"},
-    {"type":"repo","query":"\"near-cli\" stars:1..150"},
-    {"type":"repo","query":"\"py-near\" -owner:near"},
-    {"type":"code","query":"py-near -owner:near"},
-    {"type":"code","query":"near-sdk -owner:near"},
-    {"type":"code","query":"near-api-js -owner:near"},
-]
+    # Search queries as list of dictionaries
+    queries = [
+        {"type":"repo","query":"\"near-api-js\""},
+        {"type":"repo","query":"near-wallet -owner:near"},
+        {"type":"repo","query":"near lake -owner:near"},
+        {"type":"repo","query":"near indexer -owner:near"},
+        {"type":"repo","query":"near rpc -owner:near"},
+        {"type":"repo","query":"content:README.md near protocol -owner:near"},
+        {"type":"repo","query":"\"near-sdk\" stars:1..150"},
+        {"type":"repo","query":"\"near-cli\" stars:1..150"},
+        {"type":"repo","query":"\"py-near\" -owner:near"},
+        {"type":"code","query":"py-near -owner:near"},
+        {"type":"code","query":"near-sdk -owner:near"},
+        {"type":"code","query":"near-api-js -owner:near"},
+    ]
 
-for q in queries:
-    # Set the URL based on the type of query
-    if q["type"] == "repo":
-        url = "https://api.github.com/search/repositories"
-        push = f" pushed:>{min_date}" # Only repos support pushed date
-        per_page=100
-    elif q["type"] == "code":
-        url = "https://api.github.com/search/code"
-        push = ""
-        per_page=1000
-    
-    # Loop through pages
-    page_num = 1
-    while True:
-        parameters = {"q": f"{q['query']}{push}", "page": page_num, "per_page": per_page}
-        print(parameters)
-        response = make_request(url, parameters, headers)
-        data = response.json()
-        check_and_load_repos(data, ec_tracked_repos, checked_repos, new_repos, q["type"])
-        if q["type"] == "code":
-            time.sleep(6) # rate limits to 10 requests per minute
-        if 'next' in response.links:
-            page_num += 1
-            print(page_num)
-        else:
-            break
+    for q in queries:
+        # Set the URL based on the type of query
+        if q["type"] == "repo":
+            url = "https://api.github.com/search/repositories"
+            push = f" pushed:>{min_date}" # Only repos support pushed date
+            per_page=100
+        elif q["type"] == "code":
+            url = "https://api.github.com/search/code"
+            push = ""
+            per_page=1000
+        
+        # Loop through pages
+        page_num = 1
+        while True:
+            parameters = {"q": f"{q['query']}{push}", "page": page_num, "per_page": per_page}
+            print(parameters)
+            response = make_request(url, parameters, headers)
+            data = response.json()
+            check_and_load_repos(data, ec_tracked_repos, checked_repos, new_repos, q["type"])
+            if q["type"] == "code":
+                time.sleep(6) # rate limits to 10 requests per minute
+            if 'next' in response.links:
+                page_num += 1
+                print(page_num)
+            else:
+                break
 
-# Dedupe new repos
-new_repos = list(set(new_repos))
+    # Dedupe new repos
+    new_repos = list(set(new_repos))
 
-# Write new repos to a CSV file
-with open(f'{directory}/new_repos_{curr_date}.csv', 'w', newline='') as f:
-    writer = csv.writer(f)
-    for repo in new_repos:
-        writer.writerow([repo])
+    # Write new repos to a CSV file
+    with open(f'{directory}/new_repos_{curr_date}.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        for repo in new_repos:
+            writer.writerow([repo])
 
 # Manually review the list of repos in new_repos
 # For those repos that are not NEAR related, add them to checked_repos_to_exclude.csv

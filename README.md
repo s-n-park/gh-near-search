@@ -29,7 +29,7 @@ Instructions on how to install and set up your project:
 
 4. Set the environment variables:
     ```
-    export GH_API_KEY=your_api_key
+    export GITHUB_API_KEY=your_api_key
     export DIRECTORY=/path/to/directory
     ```
 

@@ -1,4 +1,3 @@
-# Authentication is defined via github.Auth
 import toml
 import re
 import os
@@ -18,16 +17,16 @@ headers = {'Authorization': f'token {api_key}'}
 curr_date = str(date.today())
 
 # Directory
-directory = os.getenv('DIRECTORY_PATH')+'/crypto-ecosystems'
-ec_directory = directory+'/crypto-ecosystems'
+directory = os.getcwd()
+ec_directory = directory + '/crypto-ecosystems'
 
 # Define Functions
-def get_ec_repo(directory):
-    if os.path.exists(directory):
+def get_ec_repo(ec_directory):
+    if os.path.exists(ec_directory):
         return # Already Downloaded Repo
     else:
         try:
-            subprocess.run(["git", "clone", "https://github.com/electric-capital/crypto-ecosystems.git", directory], check=True)
+            subprocess.run(["git", "clone", "https://github.com/electric-capital/crypto-ecosystems.git", ec_directory], check=True)
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")
 
@@ -98,9 +97,9 @@ def load_organization_repos(repo_master,org_master):
         repo_master.extend(get_org_repos(i))
     return list(set(repo_master))
 
-def main():
+def pull_ec_near_repos():
     # Check if EC Loaded
-    get_ec_repo(directory)
+    get_ec_repo(ec_directory)
     
     # Load in latest from EC File
     pull_latest_from_github(ec_directory)
