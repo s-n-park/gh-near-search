@@ -63,3 +63,16 @@ The search_github.py script is designed to search GitHub for repositories and co
 Manual Review: We suggest that the user manually review the new repositories. Repositories that are not related to NEAR should be added to the list of reviewed repositories, and repositories that are related to NEAR should be added to a TOML file in a pull request.
 
 After finishing manual review, add those lists to the file: **checked_repos_to_exclude.csv** so that they can be excluded in future runs
+
+
+## Committing to Electric Capital Near.toml
+- After you have a list of repos you want to add to the near.toml file you can follow these steps to add those to the EC file. First follow instructions from EC to fork their crypto ecosystems GH.
+
+- Steps to update the specific near.toml file programatically:
+1. Add the individual repos you want to add to the file extras.toml, make sure the format follows the sample repos already there
+2. In the update_near_toml.py, include path to the near.toml for your fork of the EC repo
+3. Run `python update_near_toml.py
+4. Check to make sure everything looks correct
+5. Commit and push changes, then open PR
+
+The python script takes care of deduping, and alphabetical sorting. It also should preserve other tags like "is_deleted". Note that this is only for updating individual repos, adding organizational github and sub organizations is not taken care of by this script.
