@@ -38,7 +38,7 @@ def load_ec_tracked_repos(curr_date):
 # Load list of previously audited repos that are not NEAR related
 # This list will grow over time and is meant to prevent multiple manual review of the same repo
 def load_reviewed_repos_to_exclude():
-    with open('{directory}/checked_repos_to_exclude.csv', 'r') as f:
+    with open(f'{directory}/checked_repos_to_exclude.csv', 'r') as f:
         reader = csv.reader(f)
         repos = list(reader)
     checked_repos = flatten_list(repos)
@@ -81,7 +81,6 @@ def search_repos():
 
     # Search queries as list of dictionaries
     queries = [
-        {"type":"repo","query":"\"near-api-js\""},
         {"type":"repo","query":"near-wallet -owner:near"},
         {"type":"repo","query":"near lake -owner:near"},
         {"type":"repo","query":"near indexer -owner:near"},
