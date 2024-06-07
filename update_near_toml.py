@@ -1,6 +1,6 @@
 from tomlkit import parse, dumps
 
-near_toml = '<PATH_TO_NEAR_TOML>'
+near_toml = '/Users/spark_near/Documents/GitHub/s-n-park/crypto-ecosystems/data/ecosystems/n/near.toml'
 # Example: '/user/crypto-ecosystems/data/ecosystems/n/near.toml'
 
 # Load the main TOML file
@@ -8,7 +8,7 @@ with open(near_toml, 'r') as file:
     main_data = parse(file.read())
 
 # Load the extra TOML file
-with open('extra.toml', 'r') as file:
+with open('extras.toml', 'r') as file:
     extra_data = parse(file.read())
 
 # Extract the repo lists

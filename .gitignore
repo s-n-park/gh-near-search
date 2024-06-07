@@ -1,4 +1,5 @@
 all_near_repos_*.csv
 all_near_repos_*.toml
 .env
+.venv/
 crypto-ecosystems/
